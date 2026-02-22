@@ -710,13 +710,7 @@ async def update_streak(user_id: int, hours_done: float) -> int:
             (user_id, today, hours_done, is_complete)
         )
         await db.commit()
-        cur = await db.execute(
-            """SELECT COUNT(*) FROM streaks
-               WHERE user_id=? AND is_complete=1
-               AND streak_date >= date('now','-30 days')""",
-            (user_id,)
-        )
-        return (await cur.fetchone())[0]
+    return await get_streak(user_id)
 
 
 async def get_streak(user_id: int) -> int:
@@ -727,7 +721,8 @@ async def get_streak(user_id: int) -> int:
                AND streak_date >= date('now','-30 days')""",
             (user_id,)
         )
-        return (await cur.fetchone())[0] or 0
+        row = await cur.fetchone()
+        return row[0] if row else 0
 
 
 async def get_admin_leaderboard() -> dict:
@@ -740,7 +735,7 @@ async def get_admin_leaderboard() -> dict:
         # 1. Top Performers (by hours + accuracy today)
         cur = await db.execute(
             """SELECT u.first_name, 
-                      COALESCE(SUM(s.hours_studied),0) as total_h,
+                      COALESCE(SUM(s.hours_studied), 0) as total_h,
                       COALESCE(AVG(CAST(s.correct_answers AS FLOAT)/NULLIF(s.total_questions,0))*100, 0) as acc
                FROM users u
                JOIN sessions s ON u.user_id = s.user_id
@@ -765,7 +760,7 @@ async def get_admin_leaderboard() -> dict:
 
         # 3. Lowest (Low hours today)
         cur = await db.execute(
-            """SELECT u.first_name, COALESCE(SUM(s.hours_studied),0) as total_h
+            """SELECT u.first_name, COALESCE(SUM(s.hours_studied), 0) as total_h
                FROM users u
                LEFT JOIN sessions s ON u.user_id = s.user_id AND s.session_date = ?
                GROUP BY u.user_id
