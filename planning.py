@@ -56,7 +56,11 @@ async def _compute_topic_priority(
     priority_score = (1.0 - acc) * pyq_w * pressure * streak_mult * marks_w
     return round(priority_score, 3)
 
-
+async def generate_daily_plan(user_id: int) -> list[dict]:
+    """
+    Generate a personalised daily study plan.
+    Adapts block hours to the user's profile (from diagnostic).
+    """
     # Build timeline starting from the Wake-up time and inserts breaks for Lunch, Dinner, and Snacks.
     profile = await get_user_profile(user_id)
     streak  = await get_streak(user_id)
