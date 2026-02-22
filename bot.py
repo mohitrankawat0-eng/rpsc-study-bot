@@ -252,6 +252,9 @@ AI adjusts tomorrow's hours based on today's performance.
 🌅 7:00 AM — Morning briefing + plan
 😤 2:00 PM — Nag if you've studied < 2h
 🌙 10:00 PM — PDF report + calibration test
+""".strip()
+
+
 class RoutineStates(StatesGroup):
     WAKE_UP = State()
     LUNCH   = State()
