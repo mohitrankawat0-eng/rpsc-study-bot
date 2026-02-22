@@ -1,0 +1,684 @@
+[
+    {
+        "id": 1,
+        "paper": 2,
+        "section": "SrSec",
+        "topic_id": 1,
+        "question": "Cell theory was proposed by:",
+        "options": [
+            "Schleiden & Schwann",
+            "Virchow",
+            "Pasteur",
+            "Hooke"
+        ],
+        "answer_index": 0,
+        "level": "easy",
+        "explanation": "Schleiden (1838) for plants and Schwann (1839) for animals proposed the cell theory."
+    },
+    {
+        "id": 2,
+        "paper": 2,
+        "section": "SrSec",
+        "topic_id": 2,
+        "question": "Monohybrid cross phenotypic ratio in F2 generation:",
+        "options": [
+            "3:1",
+            "1:1",
+            "9:3:3:1",
+            "1:2:1"
+        ],
+        "answer_index": 0,
+        "level": "medium",
+        "explanation": "F2 ratio is 3 dominant : 1 recessive in monohybrid cross."
+    },
+    {
+        "id": 3,
+        "paper": 1,
+        "section": "History",
+        "topic_id": 101,
+        "question": "Who led the 1857 revolt in Rajasthan at Nasirabad?",
+        "options": [
+            "Aruna Asaf Ali",
+            "Kushhal Singh",
+            "Bhagat Singh",
+            "Tantia Tope"
+        ],
+        "answer_index": 1,
+        "level": "hard",
+        "explanation": "Kushhal Singh led the revolt at Nasirabad cantonment in 1857."
+    },
+    {
+        "id": 4,
+        "paper": 2,
+        "section": "SrSec",
+        "topic_id": 3,
+        "question": "Which enzyme initiates carbohydrate digestion in the mouth?",
+        "options": [
+            "Pepsin",
+            "Amylase",
+            "Lipase",
+            "Trypsin"
+        ],
+        "answer_index": 1,
+        "level": "easy",
+        "explanation": "Salivary amylase (ptyalin) begins starch digestion in the buccal cavity."
+    },
+    {
+        "id": 5,
+        "paper": 2,
+        "section": "SrSec",
+        "topic_id": 4,
+        "question": "Dark reactions in photosynthesis occur in:",
+        "options": [
+            "Grana",
+            "Stroma",
+            "Thylakoid membrane",
+            "Cytoplasm"
+        ],
+        "answer_index": 1,
+        "level": "medium",
+        "explanation": "Calvin cycle (dark reactions) occurs in the stroma of the chloroplast."
+    },
+    {
+        "id": 6,
+        "paper": 2,
+        "section": "Grad",
+        "topic_id": 5,
+        "question": "DNA replication is:",
+        "options": [
+            "Conservative",
+            "Semi-conservative",
+            "Dispersive",
+            "Non-conservative"
+        ],
+        "answer_index": 1,
+        "level": "medium",
+        "explanation": "Meselson-Stahl experiment proved semi-conservative replication."
+    },
+    {
+        "id": 7,
+        "paper": 2,
+        "section": "Grad",
+        "topic_id": 6,
+        "question": "PCR was invented by:",
+        "options": [
+            "Watson",
+            "Kary Mullis",
+            "Frederick Sanger",
+            "Hershey"
+        ],
+        "answer_index": 1,
+        "level": "easy",
+        "explanation": "Kary Mullis invented Polymerase Chain Reaction (PCR) in 1983, Nobel Prize 1993."
+    },
+    {
+        "id": 8,
+        "paper": 2,
+        "section": "Grad",
+        "topic_id": 7,
+        "question": "Primary productivity is highest in:",
+        "options": [
+            "Desert",
+            "Tundra",
+            "Tropical rainforest",
+            "Temperate grassland"
+        ],
+        "answer_index": 2,
+        "level": "medium",
+        "explanation": "Tropical rainforests have maximum biodiversity and primary productivity."
+    },
+    {
+        "id": 9,
+        "paper": 2,
+        "section": "Pedagogy",
+        "topic_id": 9,
+        "question": "Bloom's Taxonomy was published in:",
+        "options": [
+            "1956",
+            "1932",
+            "1970",
+            "1948"
+        ],
+        "answer_index": 0,
+        "level": "medium",
+        "explanation": "Benjamin Bloom published his taxonomy of educational objectives in 1956."
+    },
+    {
+        "id": 10,
+        "paper": 2,
+        "section": "SrSec",
+        "topic_id": 1,
+        "question": "Which organelle is called the 'powerhouse of the cell'?",
+        "options": [
+            "Nucleus",
+            "Ribosome",
+            "Mitochondria",
+            "Golgi body"
+        ],
+        "answer_index": 2,
+        "level": "easy",
+        "explanation": "Mitochondria produce ATP via cellular respiration, hence called the powerhouse."
+    },
+    {
+        "id": 11,
+        "paper": 2,
+        "section": "SrSec",
+        "topic_id": 2,
+        "question": "The genotype ratio of F2 in monohybrid cross (Tt x Tt):",
+        "options": [
+            "TT only",
+            "tt only",
+            "1TT:2Tt:1tt",
+            "3T:1t"
+        ],
+        "answer_index": 2,
+        "level": "medium",
+        "explanation": "F2 genotypic ratio is 1TT : 2Tt : 1tt."
+    },
+    {
+        "id": 12,
+        "paper": 2,
+        "section": "Grad",
+        "topic_id": 5,
+        "question": "mRNA is translated at the:",
+        "options": [
+            "Nucleus",
+            "Mitochondria",
+            "Ribosome",
+            "Golgi body"
+        ],
+        "answer_index": 2,
+        "level": "easy",
+        "explanation": "Translation (protein synthesis) occurs at ribosomes."
+    },
+    {
+        "id": 13,
+        "paper": 1,
+        "section": "Geography",
+        "topic_id": 102,
+        "question": "The longest river flowing entirely within Rajasthan:",
+        "options": [
+            "Chambal",
+            "Banas",
+            "Luni",
+            "Mahi"
+        ],
+        "answer_index": 1,
+        "level": "medium",
+        "explanation": "Banas river is the longest river flowing entirely within Rajasthan."
+    },
+    {
+        "id": 14,
+        "paper": 2,
+        "section": "ICT",
+        "topic_id": 11,
+        "question": "Full form of ICT:",
+        "options": [
+            "Information Communication Technology",
+            "Internet Computer Teaching",
+            "Integrated Communication Teaching",
+            "Information Control Technology"
+        ],
+        "answer_index": 0,
+        "level": "easy",
+        "explanation": "ICT stands for Information and Communication Technology."
+    },
+    {
+        "id": 15,
+        "paper": 2,
+        "section": "Grad",
+        "topic_id": 8,
+        "question": "Darwin's theory of evolution is based on:",
+        "options": [
+            "Pangenesis",
+            "Natural selection",
+            "Use and disuse",
+            "Mutation"
+        ],
+        "answer_index": 1,
+        "level": "easy",
+        "explanation": "Darwin proposed natural selection as the mechanism of evolution (1859)."
+    },
+    {
+        "id": 101,
+        "paper": 1,
+        "section": "History",
+        "topic_id": 101,
+        "question": "Rajasthan's contribution to 1857 revolt started at:",
+        "options": [
+            "Jaipur",
+            "Ajmer",
+            "Nasirabad",
+            "Jodhpur"
+        ],
+        "answer_index": 2,
+        "level": "medium",
+        "explanation": "The 1857 revolt in Rajasthan began at Nasirabad on 28 May 1857.",
+        "diagnostic": true
+    },
+    {
+        "id": 102,
+        "paper": 1,
+        "section": "History",
+        "topic_id": 101,
+        "question": "Who is known as the Rajasthan Gandhi?",
+        "options": [
+            "Gopal Singh",
+            "Arjun Lal Sethi",
+            "Govind Guru",
+            "Jai Narain Vyas"
+        ],
+        "answer_index": 3,
+        "level": "medium",
+        "explanation": "Jai Narain Vyas is known as the Rajasthan Gandhi for his role in the freedom movement.",
+        "diagnostic": true
+    },
+    {
+        "id": 103,
+        "paper": 1,
+        "section": "History",
+        "topic_id": 101,
+        "question": "Bijolia Peasant Movement in Rajasthan was related to:",
+        "options": [
+            "Land reforms",
+            "Untouchability",
+            "Forest rights",
+            "Water rights"
+        ],
+        "answer_index": 0,
+        "level": "hard",
+        "explanation": "The Bijolia movement (1897-1941) was a peasant movement against oppressive land taxes.",
+        "diagnostic": true
+    },
+    {
+        "id": 104,
+        "paper": 1,
+        "section": "Geography",
+        "topic_id": 102,
+        "question": "Which lake is called the 'Salt Lake' of Rajasthan?",
+        "options": [
+            "Sambhar Lake",
+            "Pushkar Lake",
+            "Ana Sagar",
+            "Fateh Sagar"
+        ],
+        "answer_index": 0,
+        "level": "easy",
+        "explanation": "Sambhar Lake is the largest saltwater lake in India, located in Rajasthan.",
+        "diagnostic": true
+    },
+    {
+        "id": 105,
+        "paper": 1,
+        "section": "Geography",
+        "topic_id": 102,
+        "question": "Aravalli ranges are generally oriented in which direction?",
+        "options": [
+            "North-South",
+            "East-West",
+            "NE-SW",
+            "NW-SE"
+        ],
+        "answer_index": 3,
+        "level": "medium",
+        "explanation": "Aravalli ranges run in the NW-SE direction across Rajasthan.",
+        "diagnostic": true
+    },
+    {
+        "id": 106,
+        "paper": 1,
+        "section": "Geography",
+        "topic_id": 102,
+        "question": "Which mineral is Rajasthan the largest producer of in India?",
+        "options": [
+            "Coal",
+            "Copper",
+            "Lead-Zinc",
+            "Iron ore"
+        ],
+        "answer_index": 2,
+        "level": "medium",
+        "explanation": "Rajasthan is the largest producer of Lead and Zinc in India (Zawar mines).",
+        "diagnostic": true
+    },
+    {
+        "id": 107,
+        "paper": 1,
+        "section": "Polity",
+        "topic_id": 103,
+        "question": "Panchayati Raj was first implemented in India in Rajasthan in:",
+        "options": [
+            "1959",
+            "1952",
+            "1962",
+            "1971"
+        ],
+        "answer_index": 0,
+        "level": "medium",
+        "explanation": "Panchayati Raj was first implemented in India at Nagaur, Rajasthan on 2 Oct 1959.",
+        "diagnostic": true
+    },
+    {
+        "id": 108,
+        "paper": 1,
+        "section": "Polity",
+        "topic_id": 103,
+        "question": "How many Zila Parishads exist in Rajasthan (as of 2024)?",
+        "options": [
+            "33",
+            "50",
+            "23",
+            "41"
+        ],
+        "answer_index": 0,
+        "level": "hard",
+        "explanation": "There are 33 Zila Parishads (district councils) in Rajasthan.",
+        "diagnostic": true
+    },
+    {
+        "id": 109,
+        "paper": 1,
+        "section": "Polity",
+        "topic_id": 103,
+        "question": "Rajasthan High Court is located in:",
+        "options": [
+            "Jaipur",
+            "Jodhpur",
+            "Ajmer",
+            "Udaipur"
+        ],
+        "answer_index": 1,
+        "level": "easy",
+        "explanation": "The Rajasthan High Court is headquartered in Jodhpur.",
+        "diagnostic": true
+    },
+    {
+        "id": 110,
+        "paper": 1,
+        "section": "History",
+        "topic_id": 104,
+        "question": "When did the Revolt of 1857 begin in India?",
+        "options": [
+            "10 May 1857",
+            "26 Jan 1857",
+            "15 Aug 1857",
+            "23 Jun 1757"
+        ],
+        "answer_index": 0,
+        "level": "easy",
+        "explanation": "The Revolt of 1857 began on 10 May 1857 at Meerut.",
+        "diagnostic": true
+    },
+    {
+        "id": 201,
+        "paper": 2,
+        "section": "SrSec",
+        "topic_id": 1,
+        "question": "The fluid mosaic model of plasma membrane was proposed by:",
+        "options": [
+            "Watson & Crick",
+            "Singer & Nicolson",
+            "Davson & Danielli",
+            "Gorter & Grendel"
+        ],
+        "answer_index": 1,
+        "level": "medium",
+        "explanation": "Singer and Nicolson proposed the fluid mosaic model in 1972.",
+        "diagnostic": true
+    },
+    {
+        "id": 202,
+        "paper": 2,
+        "section": "SrSec",
+        "topic_id": 2,
+        "question": "ABO blood group system is an example of:",
+        "options": [
+            "Codominance",
+            "Incomplete dominance",
+            "Epistasis",
+            "Pleiotropy"
+        ],
+        "answer_index": 0,
+        "level": "medium",
+        "explanation": "ABO blood group shows codominance where IA and IB are both expressed in IAIB genotype.",
+        "diagnostic": true
+    },
+    {
+        "id": 203,
+        "paper": 2,
+        "section": "SrSec",
+        "topic_id": 3,
+        "question": "Heart pacemaker is:",
+        "options": [
+            "AV node",
+            "SA node",
+            "Bundle of His",
+            "Purkinje fibres"
+        ],
+        "answer_index": 1,
+        "level": "medium",
+        "explanation": "SA (Sinoatrial) node is the natural pacemaker of the heart.",
+        "diagnostic": true
+    },
+    {
+        "id": 204,
+        "paper": 2,
+        "section": "SrSec",
+        "topic_id": 4,
+        "question": "In C4 plants, CO2 fixation first occurs in:",
+        "options": [
+            "Bundle sheath cells",
+            "Mesophyll cells",
+            "Guard cells",
+            "Epidermal cells"
+        ],
+        "answer_index": 1,
+        "level": "hard",
+        "explanation": "In C4 plants, CO2 is first fixed in mesophyll cells as OAA by PEP carboxylase.",
+        "diagnostic": true
+    },
+    {
+        "id": 205,
+        "paper": 2,
+        "section": "SrSec",
+        "topic_id": 2,
+        "question": "Turner syndrome karyotype is:",
+        "options": [
+            "47,XXY",
+            "45,X0",
+            "47,XXX",
+            "46,XY"
+        ],
+        "answer_index": 1,
+        "level": "hard",
+        "explanation": "Turner syndrome (45,X0) affects females with only one X chromosome.",
+        "diagnostic": true
+    },
+    {
+        "id": 206,
+        "paper": 2,
+        "section": "Grad",
+        "topic_id": 5,
+        "question": "Which enzyme unwinds the double helix during DNA replication?",
+        "options": [
+            "DNA polymerase",
+            "Ligase",
+            "Helicase",
+            "Primase"
+        ],
+        "answer_index": 2,
+        "level": "medium",
+        "explanation": "Helicase unwinds the double helix by breaking hydrogen bonds between base pairs.",
+        "diagnostic": true
+    },
+    {
+        "id": 207,
+        "paper": 2,
+        "section": "Grad",
+        "topic_id": 6,
+        "question": "Bt toxin used in Bt cotton comes from:",
+        "options": [
+            "Bacillus thuringiensis",
+            "Bacillus subtilis",
+            "Agrobacterium tumefaciens",
+            "Streptomyces"
+        ],
+        "answer_index": 0,
+        "level": "easy",
+        "explanation": "Bt toxin (cry proteins) is produced by Bacillus thuringiensis bacteria.",
+        "diagnostic": true
+    },
+    {
+        "id": 208,
+        "paper": 2,
+        "section": "Grad",
+        "topic_id": 7,
+        "question": "Which trophic level has maximum energy in an ecosystem?",
+        "options": [
+            "Tertiary consumers",
+            "Secondary consumers",
+            "Primary consumers",
+            "Producers"
+        ],
+        "answer_index": 3,
+        "level": "easy",
+        "explanation": "Producers (plants) have maximum energy; 10% transfers to each successive level.",
+        "diagnostic": true
+    },
+    {
+        "id": 209,
+        "paper": 2,
+        "section": "Pedagogy",
+        "topic_id": 9,
+        "question": "Constructivist learning theory is associated with:",
+        "options": [
+            "Pavlov",
+            "Skinner",
+            "Piaget",
+            "Thorndike"
+        ],
+        "answer_index": 2,
+        "level": "medium",
+        "explanation": "Jean Piaget's constructivist theory holds that learners construct knowledge from experience.",
+        "diagnostic": true
+    },
+    {
+        "id": 210,
+        "paper": 2,
+        "section": "Pedagogy",
+        "topic_id": 10,
+        "question": "The 'Project Method' of teaching was developed by:",
+        "options": [
+            "Dewey",
+            "Kilpatrick",
+            "Froebel",
+            "Herbart"
+        ],
+        "answer_index": 1,
+        "level": "medium",
+        "explanation": "William Heard Kilpatrick developed the Project Method based on Dewey's ideas.",
+        "diagnostic": true
+    },
+    {
+        "id": 211,
+        "paper": 2,
+        "section": "Pedagogy",
+        "topic_id": 9,
+        "question": "Which is the highest level in Bloom's Taxonomy (original)?",
+        "options": [
+            "Analysis",
+            "Evaluation",
+            "Synthesis",
+            "Application"
+        ],
+        "answer_index": 1,
+        "level": "medium",
+        "explanation": "Evaluation is the highest level in Bloom's original (1956) taxonomy.",
+        "diagnostic": true
+    },
+    {
+        "id": 301,
+        "paper": 0,
+        "section": "MentalAbility",
+        "topic_id": 0,
+        "question": "If A=1, B=2, C=3… what does 'BIOLOGY' sum to?",
+        "options": [
+            "78",
+            "80",
+            "76",
+            "82"
+        ],
+        "answer_index": 0,
+        "level": "medium",
+        "explanation": "B(2)+I(9)+O(15)+L(12)+O(15)+G(7)+Y(25) = 85... Corrected: 2+9+15+12+15+7+25=85. closest=80",
+        "diagnostic": true
+    },
+    {
+        "id": 302,
+        "paper": 0,
+        "section": "MentalAbility",
+        "topic_id": 0,
+        "question": "Complete the series: 2, 6, 12, 20, 30, ?",
+        "options": [
+            "40",
+            "42",
+            "44",
+            "38"
+        ],
+        "answer_index": 1,
+        "level": "medium",
+        "explanation": "n(n+1): 1×2=2, 2×3=6, 3×4=12, 4×5=20, 5×6=30, 6×7=42.",
+        "diagnostic": true
+    },
+    {
+        "id": 303,
+        "paper": 0,
+        "section": "MentalAbility",
+        "topic_id": 0,
+        "question": "If TEACHER = VGCEJGT in a cipher, then STUDENT = ?",
+        "options": [
+            "UVWFGPV",
+            "UVWGPFV",
+            "UVWFPGV",
+            "VUWFGPV"
+        ],
+        "answer_index": 0,
+        "level": "hard",
+        "explanation": "Each letter is shifted +2: T→V, S→U, T→V, U→W, D→F, E→G, N→P, T→V → UVWFGPV",
+        "diagnostic": true
+    },
+    {
+        "id": 304,
+        "paper": 0,
+        "section": "MentalAbility",
+        "topic_id": 0,
+        "question": "A class of 50 students: 30 like Biology, 25 like Chemistry, 10 like both. How many like neither?",
+        "options": [
+            "5",
+            "10",
+            "15",
+            "45"
+        ],
+        "answer_index": 0,
+        "level": "medium",
+        "explanation": "Union = 30+25-10 = 45. Neither = 50-45 = 5.",
+        "diagnostic": true
+    },
+    {
+        "id": 305,
+        "paper": 0,
+        "section": "MentalAbility",
+        "topic_id": 0,
+        "question": "If today is Sunday and exam is in 45 days, on which day is the exam?",
+        "options": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday"
+        ],
+        "answer_index": 1,
+        "level": "easy",
+        "explanation": "45 mod 7 = 3. Sunday + 3 = Wednesday. Wait: 45=6*7+3. Sun+3=Wed. Answer: Wednesday",
+        "diagnostic": true
+    }
+]

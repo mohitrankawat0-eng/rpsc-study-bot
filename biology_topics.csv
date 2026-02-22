@@ -1,0 +1,12 @@
+topic_id,name,paper,section,target_hours,marks_weight,priority,pyq_weight,recommended_books,free_pdf_link
+1,Cell Theory and Cell Cycle,2,SrSec,30,12,HIGH,10,"NCERT XI Ch 8",https://ncert.nic.in/textbook.php?kebo1=8-10
+2,Mendelian Genetics,2,SrSec,25,10,HIGH,8,"NCERT XII Ch 5-6",https://ncert.nic.in/textbook.php?kebo2=5-1
+3,Human Physiology Digestion Circulation,2,SrSec,35,15,HIGH,12,"NCERT XII Ch 16-18",https://ncert.nic.in/textbook.php?kebo2=16-1
+4,Plant Physiology Photosynthesis,2,SrSec,30,12,HIGH,10,"NCERT XI Ch 13-14",https://ncert.nic.in/textbook.php?kebo1=13-1
+5,Molecular Biology DNA RNA,2,Grad,30,10,HIGH,8,"NCERT XII Ch 6",https://ncert.nic.in/textbook.php?kebo2=6-1
+6,Biotechnology rDNA PCR,2,Grad,20,8,HIGH,6,"NCERT XII Ch 11-12",https://ncert.nic.in/textbook.php?kebo2=11-1
+7,Ecology Ecosystems Pollution,2,Grad,25,10,HIGH,8,"NCERT XII Ch 13-14",https://ncert.nic.in/textbook.php?kebo2=13-1
+8,Evolution Darwinism,2,Grad,15,7,MEDIUM,5,"NCERT XII Ch 7",https://ncert.nic.in/textbook.php?kebo2=7-1
+9,Learning Theories Classroom Mgmt,2,Pedagogy,25,12,HIGH,10,"NCERT Psych XI Ch 6",https://ncert.nic.in/textbook.php?leep1=6-1
+10,Teaching Methods Lesson Planning,2,Pedagogy,20,10,HIGH,8,"NCERT Pedagogy",https://ncert.nic.in/textbook/pdf/leed102.pdf
+11,ICT Virtual Classroom Apps Script,2,ICT,15,7,HIGH,5,"NCERT ICT",https://ncert.nic.in/textbook/pdf/leed102.pdf
