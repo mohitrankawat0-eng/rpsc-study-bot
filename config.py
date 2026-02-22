@@ -1,5 +1,5 @@
 """
-config.py - Central configuration for RPSC Study Bot
+config.py - Central configuration for RPSC Study Bot (Railway Optimized)
 """
 import os
 from dotenv import load_dotenv
@@ -12,18 +12,27 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BOT_TOKEN: str = os.getenv("BOT_TOKEN", "")
 ADMIN_CHAT_ID: int = int(os.getenv("ADMIN_CHAT_ID", "0"))
 
-# ── Database (Robust for Railway Volumes) ───────────────────────────────────
+# ── Database (Mapped to Railway Volume) ─────────────────────────────────────
+# We use /app/data for the Volume to keep the DB safe
 DB_DIR  = os.path.join(BASE_DIR, "data")
 if not os.path.exists(DB_DIR):
     os.makedirs(DB_DIR, exist_ok=True)
 DB_PATH = os.path.join(DB_DIR, "rpsc_bot.db")
 
-# ── Data Files ────────────────────────────────────────────────────────────────
-BIOLOGY_CSV: str   = os.path.join(DB_DIR, "biology_topics.csv")
-PAPER1_CSV: str    = os.path.join(DB_DIR, "paper1_topics.csv")
-QUESTIONS_JSON: str = os.path.join(DB_DIR, "questions_sample.json")
+# ── Seed Data Files (Uploaded in the repository) ───────────────────────────
+# We look for them in the repository folder directly
+BIOLOGY_CSV: str   = os.path.join(BASE_DIR, "data", "biology_topics.csv")
+PAPER1_CSV: str    = os.path.join(BASE_DIR, "data", "paper1_topics.csv")
+QUESTIONS_JSON: str = os.path.join(BASE_DIR, "data", "questions_sample.json")
 
-# ── Daily Study Plan (10.5 hours total) ──────────────────────────────────────
+# IF the volume is mounted at /app/data, it might MASK the repo's /data folder.
+# So we check if the files exist, if not, we look in the root if we put them there.
+if not os.path.exists(BIOLOGY_CSV):
+    BIOLOGY_CSV = os.path.join(BASE_DIR, "biology_topics.csv")
+    PAPER1_CSV  = os.path.join(BASE_DIR, "paper1_topics.csv")
+    QUESTIONS_JSON = os.path.join(BASE_DIR, "questions_sample.json")
+
+# ── Daily Study Plan ────────────────────────────────────────────────────────
 DAILY_BLOCKS = [
     {"label": "Paper II – SrSec Biology",    "paper": 2, "section": "SrSec",    "hours": 2.5, "emoji": "🔬"},
     {"label": "Paper II – Grad Biology",     "paper": 2, "section": "Grad",     "hours": 2.0, "emoji": "🧬"},
@@ -56,6 +65,7 @@ MOCK_TIME_LIMITS = {"paper1": 120, "paper2": 120, "mini": 30}
 STREAK_GOAL_HOURS = 8.0
 
 # ── PDF Report ────────────────────────────────────────────────────────────────
+# We use 'reports' folder for PDFs
 REPORT_OUTPUT_DIR = os.path.join(BASE_DIR, "reports")
 if not os.path.exists(REPORT_OUTPUT_DIR):
     os.makedirs(REPORT_OUTPUT_DIR, exist_ok=True)
