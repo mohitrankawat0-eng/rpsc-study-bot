@@ -168,6 +168,37 @@ async def _motivational_nag(bot: Bot) -> None:
             log.error(f"Nag failed for {uid}: {e}")
 
 
+async def _admin_daily_report(bot: Bot) -> None:
+    """Send a global leadership summary to the admin."""
+    from db import get_admin_leaderboard
+    if not ADMIN_CHAT_ID:
+        return
+
+    try:
+        data = await get_admin_leaderboard()
+        lines = [
+            f"👑 *RPSC Study Bot — Admin Daily Dashboard*",
+            f"📅 {date.today().strftime('%d %B %Y')}\n",
+            f"🏆 *Top Performers (Most Hours)*"
+        ]
+        for i, u in enumerate(data['top'], 1):
+            lines.append(f"  {i}. {u['first_name']}: *{u['total_h']}h* ({int(u['acc'])}% acc)")
+        
+        lines.append(f"\n✅ *On Track (High Adherence)*")
+        for i, u in enumerate(data['on_track'], 1):
+            lines.append(f"  {i}. {u['first_name']}: *{u['done_blocks']} blocks* done")
+
+        lines.append(f"\n🛑 *Attention Needed (Low Study)*")
+        for i, u in enumerate(data['low'], 1):
+            lines.append(f"  {i}. {u['first_name']}: *{u['total_h']}h today*")
+
+        lines.append(f"\n_Keep motivating them! RPSC selection guarantees await._")
+        
+        await bot.send_message(ADMIN_CHAT_ID, "\n".join(lines), parse_mode="Markdown")
+    except Exception as e:
+        log.error(f"Admin report failed: {e}")
+
+
 # ── Scheduler setup ───────────────────────────────────────────────────────────
 def setup_scheduler(bot: Bot) -> None:
     """Register all scheduled jobs."""
@@ -197,6 +228,14 @@ def setup_scheduler(bot: Bot) -> None:
         CronTrigger(hour=14, minute=0, timezone=TIMEZONE),
         args=[bot],
         id="nag_midday",
+        replace_existing=True,
+    )
+
+    scheduler.add_job(
+        _admin_daily_report,
+        CronTrigger(hour=23, minute=0, timezone=TIMEZONE),
+        args=[bot],
+        id="admin_daily_report",
         replace_existing=True,
     )
 

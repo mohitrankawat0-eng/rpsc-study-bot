@@ -719,15 +719,54 @@ async def update_streak(user_id: int, hours_done: float) -> int:
         return (await cur.fetchone())[0]
 
 
-async def get_streak(user_id: int) -> int:
-    async with aiosqlite.connect(DB_PATH) as db:
-        cur = await db.execute(
-            """SELECT COUNT(*) FROM streaks
-               WHERE user_id=? AND is_complete=1
-               AND streak_date >= date('now','-30 days')""",
-            (user_id,)
-        )
         return (await cur.fetchone())[0] or 0
+
+
+async def get_admin_leaderboard() -> dict:
+    """Aggregate global performance for the admin dashboard."""
+    from datetime import date
+    async with aiosqlite.connect(DB_PATH) as db:
+        db.row_factory = aiosqlite.Row
+        today = date.today().isoformat()
+        
+        # 1. Top Performers (by hours + accuracy today)
+        cur = await db.execute(
+            """SELECT u.first_name, 
+                      SUM(s.hours_studied) as total_h,
+                      AVG(CAST(s.correct_answers AS FLOAT)/NULLIF(s.total_questions,0))*100 as acc
+               FROM users u
+               JOIN sessions s ON u.user_id = s.user_id
+               WHERE s.session_date = ?
+               GROUP BY u.user_id
+               ORDER BY total_h DESC, acc DESC
+               LIMIT 5""", (today,)
+        )
+        top = [dict(r) for r in await cur.fetchall()]
+
+        # 2. On Track (High Adherence - completed blocks)
+        cur = await db.execute(
+            """SELECT u.first_name, COUNT(p.plan_id) as done_blocks
+               FROM users u
+               JOIN daily_plan p ON u.user_id = p.user_id
+               WHERE p.plan_date = ? AND p.status = 'done'
+               GROUP BY u.user_id
+               ORDER BY done_blocks DESC
+               LIMIT 5""", (today,)
+        )
+        on_track = [dict(r) for r in await cur.fetchall()]
+
+        # 3. Lowest (Low hours today)
+        cur = await db.execute(
+            """SELECT u.first_name, COALESCE(SUM(s.hours_studied),0) as total_h
+               FROM users u
+               LEFT JOIN sessions s ON u.user_id = s.user_id AND s.session_date = ?
+               GROUP BY u.user_id
+               ORDER BY total_h ASC
+               LIMIT 5""", (today,)
+        )
+        low = [dict(r) for r in await cur.fetchall()]
+
+        return {"top": top, "on_track": on_track, "low": low}
 
 
 # ────────────────────────────────────────────────────────────────────────────

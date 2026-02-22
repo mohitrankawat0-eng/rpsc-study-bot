@@ -34,7 +34,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from config import BOT_TOKEN
+from config import BOT_TOKEN, ADMIN_CHAT_ID
 from db import (
     init_db, get_or_create_user, get_today_stats,
     log_session, mark_block_done, mark_block_skipped,
@@ -398,6 +398,19 @@ async def cmd_mock_shortcut(msg: Message) -> None:
 @dp.message(Command("help"))
 async def cmd_help(msg: Message) -> None:
     await msg.answer(USER_MANUAL, parse_mode="Markdown", reply_markup=kb_home())
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# /admin — restrict to ADMIN_CHAT_ID
+# ════════════════════════════════════════════════════════════════════════════
+@dp.message(Command("admin"))
+async def cmd_admin_dashboard(msg: Message) -> None:
+    if str(msg.from_user.id) != str(ADMIN_CHAT_ID):
+        await msg.answer("🚫 *Private Command:* Access Denied.")
+        return
+
+    from scheduler import _admin_daily_report
+    await _admin_daily_report(bot)
 
 
 # ════════════════════════════════════════════════════════════════════════════
