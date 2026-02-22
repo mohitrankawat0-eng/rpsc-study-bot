@@ -39,13 +39,17 @@ from db import (
     init_db, get_or_create_user, get_today_stats,
     log_session, mark_block_done, mark_block_skipped,
     compute_weak_topics, get_streak, get_today_plan,
-    is_onboarded, get_user_profile, save_calibration
+    is_onboarded, get_user_profile, save_calibration,
+    update_user_routine, start_block_session, clear_active_session
 )
 from planning import (
     generate_daily_plan, format_plan_message,
     format_block_message, get_exam_countdown,
     format_profile_message
 )
+from aiogram.fsm.state import State, StatesGroup
+from aiogram.fsm.context import FSMContext
+from datetime import datetime
 from syllabus import get_syllabus_summary, get_books_list
 from questions import start_mock, handle_mock_answer, format_mock_history, has_active_mock
 from diagnostic import (
@@ -114,18 +118,19 @@ def kb_after_plan() -> InlineKeyboardMarkup:
     ])
 
 
-def kb_after_block() -> InlineKeyboardMarkup:
+def kb_after_block(has_started: bool = False) -> InlineKeyboardMarkup:
     """Shown after showing next block."""
-    return InlineKeyboardMarkup(inline_keyboard=[
-        [
-            InlineKeyboardButton(text="✅ Mark Done (60 min)",  callback_data="done:60:0:0"),
-            InlineKeyboardButton(text="✅ Done (90 min)",       callback_data="done:90:0:0"),
-        ],
-        [
-            InlineKeyboardButton(text="⏩ Skip This Block",     callback_data="menu:skip"),
-            InlineKeyboardButton(text="🏠 Home Menu",           callback_data="menu:home"),
-        ],
-    ])
+    if not has_started:
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="🚀 Start This Block", callback_data="menu:block_start")],
+            [InlineKeyboardButton(text="⏩ Skip This Block",  callback_data="menu:skip")],
+            [InlineKeyboardButton(text="🏠 Home Menu",        callback_data="menu:home")],
+        ])
+    else:
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="✅ Finish Block",      callback_data="menu:block_finish")],
+            [InlineKeyboardButton(text="🏠 Home (In-Progress)", callback_data="menu:home")],
+        ])
 
 
 def kb_done_score() -> InlineKeyboardMarkup:
@@ -247,14 +252,18 @@ AI adjusts tomorrow's hours based on today's performance.
 🌅 7:00 AM — Morning briefing + plan
 😤 2:00 PM — Nag if you've studied < 2h
 🌙 10:00 PM — PDF report + calibration test
-""".strip()
+class RoutineStates(StatesGroup):
+    WAKE_UP = State()
+    LUNCH   = State()
+    SNACK   = State()
+    DINNER  = State()
 
 
 # ════════════════════════════════════════════════════════════════════════════
 # /start — Onboard new users with diagnostic; returning users see home
 # ════════════════════════════════════════════════════════════════════════════
 @dp.message(CommandStart())
-async def cmd_start(msg: Message) -> None:
+async def cmd_start(msg: Message, state: FSMContext) -> None:
     uid  = msg.from_user.id
     user = await get_or_create_user(
         uid,
@@ -281,13 +290,12 @@ async def cmd_start(msg: Message) -> None:
             f"`/start` `/today` `/done` `/mock` `/help`\n\n"
             f"_Everything else is just tap a button!_ 👆\n\n"
             f"━━━━━━━━━━━━━━━━━━━━\n"
-            f"🎯 *First: 30-Question Baseline Test*\n"
-            f"Takes ~15 min. Sets your personalised daily hours & priorities.\n"
-            f"_Starting in 3 seconds…_",
+            f"🎯 *First: Personal Routine Setup*\n"
+            f"Tell me your times so I can build a plan without interruptions.\n\n"
+            f"⏰ *What time do you Wake up?* (e.g., 06:00, 07:30)",
             parse_mode="Markdown"
         )
-        await asyncio.sleep(3)
-        await start_diagnostic(uid, bot, msg.chat.id)
+        await state.set_state(RoutineStates.WAKE_UP)
     else:
         # ── RETURNING USER: home screen ────────────────────────────────────
         streak    = await get_streak(uid)
@@ -304,6 +312,41 @@ async def cmd_start(msg: Message) -> None:
             reply_markup=kb_main_menu()
         )
 
+# ── ROUTINE HANDLERS ────────────────────────────────────────────────────────
+@dp.message(RoutineStates.WAKE_UP)
+async def process_wake_up(msg: Message, state: FSMContext) -> None:
+    await state.update_data(wake_up=msg.text)
+    await msg.answer("🍱 *Lunch time?* (e.g., 13:00, 14:00)")
+    await state.set_state(RoutineStates.LUNCH)
+
+@dp.message(RoutineStates.LUNCH)
+async def process_lunch(msg: Message, state: FSMContext) -> None:
+    await state.update_data(lunch=msg.text)
+    await msg.answer("☕ *Evening Snack/Tea time?* (e.g., 17:00, 18:00)")
+    await state.set_state(RoutineStates.SNACK)
+
+@dp.message(RoutineStates.SNACK)
+async def process_snack(msg: Message, state: FSMContext) -> None:
+    await state.update_data(snack=msg.text)
+    await msg.answer("🌙 *Dinner time?* (e.g., 20:30, 21:00)")
+    await state.set_state(RoutineStates.DINNER)
+
+@dp.message(RoutineStates.DINNER)
+async def process_dinner(msg: Message, state: FSMContext) -> None:
+    data = await state.get_data()
+    data['dinner'] = msg.text
+    await update_user_routine(msg.from_user.id, data)
+    await state.clear()
+    await msg.answer(
+        "✅ *Routine saved!*\n\n"
+        "🎯 *Now: 30-Question Baseline Test*\n"
+        "Takes ~15 min. Sets your diagnostic profile.\n"
+        "_Starting in 3 seconds…_",
+        parse_mode="Markdown"
+    )
+    await asyncio.sleep(3)
+    await start_diagnostic(msg.from_user.id, bot, msg.chat.id)
+
 
 # ════════════════════════════════════════════════════════════════════════════
 # /today — shortcut
@@ -318,29 +361,15 @@ async def cmd_today_shortcut(msg: Message) -> None:
 # ════════════════════════════════════════════════════════════════════════════
 @dp.message(Command("done"))
 async def cmd_done_shortcut(msg: Message) -> None:
-    text  = msg.text or ""
-    parts = text.split()
-    minutes = 60
-    correct = 0
-    total_q = 0
-
-    if len(parts) >= 2 and parts[1].isdigit():
-        minutes = int(parts[1])
-    if len(parts) >= 3:
-        s = parts[2]
-        m = re.match(r'^(\d+)/(\d+)$', s)
-        if m:
-            correct = int(m.group(1))
-            total_q = int(m.group(2))
-        elif s.endswith('%'):
-            pct     = float(s[:-1])
-            correct = int(pct / 10)
-            total_q = 10
-        elif s.isdigit():
-            correct = int(s)
-            total_q = 10
-
-    await _log_done(msg.from_user.id, msg.chat.id, minutes, correct, total_q)
+    await msg.answer(
+        "🚫 *Manual logging is disabled.*\n\n"
+        "To ensure RPSC selection, we now use *Strict Time Tracking*.\n"
+        "1. Tap `⏭️ Next Block` to see your topic.\n"
+        "2. Tap `🚀 Start This Block` when you begin.\n"
+        "3. Tap `✅ Finish Block` only after you complete the time.\n\n"
+        "_This helps the AI build a better plan for you!_",
+        parse_mode="Markdown"
+    )
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -470,49 +499,118 @@ async def on_callback(cb: CallbackQuery) -> None:
         elif action == "next":
             await _show_next_block(uid, cid)
 
-        elif action == "done_prompt":
-            _pending_done[uid] = 60
-            await bot.send_message(
-                cid,
-                "⏱️ *How long did you study?*",
-                parse_mode="Markdown",
-                reply_markup=InlineKeyboardMarkup(inline_keyboard=[
-                    [
-                        InlineKeyboardButton(text="30 min", callback_data="done:30:0:0"),
-                        InlineKeyboardButton(text="45 min", callback_data="done:45:0:0"),
-                        InlineKeyboardButton(text="60 min", callback_data="done:60:0:0"),
-                    ],
-                    [
-                        InlineKeyboardButton(text="75 min", callback_data="done:75:0:0"),
-                        InlineKeyboardButton(text="90 min", callback_data="done:90:0:0"),
-                        InlineKeyboardButton(text="2 hours", callback_data="done:120:0:0"),
-                    ],
-                    [
-                        InlineKeyboardButton(text="🔙 Cancel", callback_data="menu:home"),
-                    ],
-                ])
-            )
-
-        elif action == "skip":
+        elif action == "block_start":
             plan    = await get_today_plan(uid)
             pending = [b for b in plan if b.get('status') == 'pending']
             if not pending:
-                await bot.send_message(cid, "❌ No pending blocks to skip.")
-            else:
-                block_idx = pending[0].get('block_index', 0)
-                label     = pending[0].get('label', 'Block')
-                await mark_block_skipped(uid, block_idx)
+                await cb.answer("No pending blocks.", show_alert=True)
+                return
+            
+            block_idx = pending[0]['block_index']
+            await start_block_session(uid, block_idx)
+            await bot.send_message(
+                cid,
+                f"🚀 *Block Started!* ⏱️\n"
+                f"Stay away from distractions. I'll be waiting for you to finish.",
+                parse_mode="Markdown",
+                reply_markup=kb_after_block(has_started=True)
+            )
+
+        elif action == "block_finish":
+            # Check elapsed time vs block target
+            profile = await get_user_profile(uid)
+            if not profile or not profile.get('active_block_start'):
+                await cb.answer("You didn't start the block!", show_alert=True)
+                return
+            
+            start_dt = datetime.fromisoformat(profile['active_block_start'])
+            elapsed  = (datetime.now() - start_dt).total_seconds() / 60
+            
+            plan    = await get_today_plan(uid)
+            pending = [b for b in plan if b.get('status') == 'pending' and b['block_index'] == profile['active_block_index']]
+            if not pending:
+                await cb.answer("Session error.", show_alert=True)
+                return
+            
+            target_min = pending[0]['hours'] * 60
+            if elapsed < (target_min * 0.9): # 10% grace period
+                remaining = int(target_min - elapsed)
                 await bot.send_message(
                     cid,
-                    f"⏭️ *Skipped:* {label}\n\n"
-                    f"⚠️ The AI tracks your skips — too many reduce your score!\n"
-                    f"Tap Next Block to continue.",
+                    f"⚠️ *Discipline Alert!* 😤\n\n"
+                    f"You have only studied for *{int(elapsed)} minutes*.\n"
+                    f"This block requires *{int(target_min)} minutes*.\n\n"
+                    f"RPSC selection is for those who are honest with themselves. "
+                    f"Go back and finish the remaining *{remaining} minutes*!",
                     parse_mode="Markdown",
-                    reply_markup=InlineKeyboardMarkup(inline_keyboard=[[
-                        InlineKeyboardButton(text="⏭️ Next Block",  callback_data="menu:next"),
-                        InlineKeyboardButton(text="🏠 Home",        callback_data="menu:home"),
-                    ]])
+                    reply_markup=kb_after_block(has_started=True)
                 )
+            else:
+                # Success!
+                _pending_done[uid] = int(elapsed)
+                await clear_active_session(uid)
+                await bot.send_message(
+                    cid,
+                    f"🎊 *Great Discipline!* You spent {int(elapsed)} mins.\n"
+                    f"How did you score in your self-assessment?",
+                    parse_mode="Markdown",
+                    reply_markup=kb_done_score()
+                )
+
+        elif action == "done_prompt":
+            profile = await get_user_profile(uid)
+            if profile and profile.get('active_block_index') != -1:
+                # Redirect to finish block
+                await bot.send_message(
+                    cid, "📌 You have an active block running. Finish it first!",
+                    reply_markup=kb_after_block(has_started=True)
+                )
+            else:
+                await bot.send_message(
+                    cid, "❌ Start a block using 'Home' -> 'Next Block' first to log time accurately.",
+                    reply_markup=kb_home()
+                )
+
+        elif action == "skip":
+            profile = await get_user_profile(uid)
+            plan    = await get_today_plan(uid)
+            pending = [b for b in plan if b.get('status') == 'pending']
+            
+            if not pending:
+                await bot.send_message(cid, "❌ No pending blocks to skip.")
+                return
+
+            # Strict Skip Rule: Only in first 10 mins
+            if profile and profile.get('active_block_start'):
+                start_dt = datetime.fromisoformat(profile['active_block_start'])
+                elapsed  = (datetime.now() - start_dt).total_seconds() / 60
+                if elapsed > 10:
+                    await bot.send_message(
+                        cid, 
+                        f"🛑 *Skip Denied!* 😤\n\n"
+                        f"You started this block {int(elapsed)} minutes ago. "
+                        f"You can only skip a block within the first 10 minutes.\n\n"
+                        f"Finish what you started! RPSC selection depends on this.",
+                        parse_mode="Markdown",
+                        reply_markup=kb_after_block(has_started=True)
+                    )
+                    return
+
+            block_idx = pending[0].get('block_index', 0)
+            label     = pending[0].get('label', 'Block')
+            await mark_block_skipped(uid, block_idx)
+            await clear_active_session(uid)
+            await bot.send_message(
+                cid,
+                f"⏭️ *Skipped:* {label}\n\n"
+                f"⚠️ The AI tracks your skips — too many reduce your score!\n"
+                f"Tap Next Block to continue.",
+                parse_mode="Markdown",
+                reply_markup=InlineKeyboardMarkup(inline_keyboard=[[
+                    InlineKeyboardButton(text="⏭️ Next Block",  callback_data="menu:next"),
+                    InlineKeyboardButton(text="🏠 Home",        callback_data="menu:home"),
+                ]])
+            )
 
         elif action == "stats":
             await _show_stats(uid, cid)

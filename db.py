@@ -41,6 +41,13 @@ CREATE TABLE IF NOT EXISTS user_profiles (
     learning_style          TEXT    DEFAULT 'Theory->MCQ',
     diagnostic_done         INTEGER DEFAULT 0,
     last_calibrated         TEXT,
+    wake_up_time           TEXT    DEFAULT '06:00',
+    lunch_time             TEXT    DEFAULT '13:00',
+    dinner_time            TEXT    DEFAULT '20:30',
+    snack_time             TEXT    DEFAULT '17:00',
+    rest_days_done         INTEGER DEFAULT 0,
+    active_block_index     INTEGER DEFAULT -1,
+    active_block_start     TEXT,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
@@ -282,6 +289,43 @@ async def get_user(user_id: int) -> dict | None:
 async def mark_user_onboarded(user_id: int) -> None:
     async with aiosqlite.connect(DB_PATH) as db:
         await db.execute("UPDATE users SET onboarded=1 WHERE user_id=?", (user_id,))
+        await db.commit()
+
+
+async def update_user_routine(user_id: int, routines: dict) -> None:
+    """Update personal times for the user profile."""
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute(
+            """UPDATE user_profiles SET
+               wake_up_time=?, lunch_time=?, dinner_time=?, snack_time=?
+               WHERE user_id=?""",
+            (routines.get('wake_up', '06:00'),
+             routines.get('lunch', '13:00'),
+             routines.get('dinner', '20:30'),
+             routines.get('snack', '17:00'),
+             user_id)
+        )
+        await db.commit()
+
+
+async def start_block_session(user_id: int, block_index: int) -> None:
+    """Mark a study block as actively started."""
+    now_str = datetime.now().isoformat()
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute(
+            "UPDATE user_profiles SET active_block_index=?, active_block_start=? WHERE user_id=?",
+            (block_index, now_str, user_id)
+        )
+        await db.commit()
+
+
+async def clear_active_session(user_id: int) -> None:
+    """Clear active session after completion or skip."""
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute(
+            "UPDATE user_profiles SET active_block_index=-1, active_block_start=NULL WHERE user_id=?",
+            (user_id,)
+        )
         await db.commit()
 
 

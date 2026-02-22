@@ -9,9 +9,11 @@ import math
 from datetime import date
 from db import (
     get_all_topics, save_daily_plan, get_today_plan,
-    get_user_profile, get_streak
+    get_user_profile, get_streak, get_user
 )
-from config import DAILY_BLOCKS
+from config import DAILY_BLOCKS, TIMEZONE
+from datetime import datetime, date, timedelta
+import pytz
 
 
 SECTION_EMOJIS = {
@@ -55,19 +57,32 @@ async def _compute_topic_priority(
     return round(priority_score, 3)
 
 
-async def generate_daily_plan(user_id: int) -> list[dict]:
-    """
-    Generate a personalised daily study plan.
-    Adapts block hours to the user's profile (from diagnostic).
-    Falls back to defaults for new users.
-    """
+    # Build timeline starting from the Wake-up time and inserts breaks for Lunch, Dinner, and Snacks.
     profile = await get_user_profile(user_id)
     streak  = await get_streak(user_id)
 
     topic_accuracy    = profile.get('topic_accuracy', {}) if profile else {}
     daily_hours       = profile.get('recommended_daily_hours', 10.5) if profile else 10.5
-    block_len_min     = profile.get('recommended_block_len', 90) if profile else 90
     error_type        = profile.get('error_type', 'conceptual') if profile else 'conceptual'
+
+    wake_up = profile.get('wake_up_time', '06:00') if profile else '06:00'
+    lunch   = profile.get('lunch_time', '13:00')   if profile else '13:00'
+    dinner  = profile.get('dinner_time', '20:30')  if profile else '20:30'
+    snack   = profile.get('snack_time', '17:00')   if profile else '17:00'
+
+    # Check for Rest Day (every 14 days)
+    user_data = await get_user(user_id)
+    if user_data:
+        try:
+            # created_at is usually like '2026-02-22' or '2026-02-22 06:30:34'
+            created_str = user_data['created_at'].split()[0]
+            created = datetime.strptime(created_str, "%Y-%m-%d")
+            days_since = (datetime.now() - created).days
+            if days_since > 0 and days_since % 14 == 0:
+                return await _generate_rest_day_plan(user_id)
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).error(f"Rest day check error: {e}")
 
     topics_p2 = await get_all_topics(paper=2)
     topics_p1 = await get_all_topics(paper=1)
@@ -88,11 +103,33 @@ async def generate_daily_plan(user_id: int) -> list[dict]:
     # Scale block hours proportionally to recommended daily hours
     hour_scale = daily_hours / 10.5
 
+    # Build timeline
+    current_time_dt = datetime.combine(date.today(), datetime.strptime(wake_up, "%H:%M").time())
+    
     blocks = []
     for block_def in DAILY_BLOCKS:
         section = block_def['section']
         paper   = block_def['paper']
-        adjusted_hours = round(block_def['hours'] * hour_scale, 1)
+        adj_hrs = round(block_def['hours'] * hour_scale, 1)
+        
+        # Check for breaks
+        lunch_dt  = datetime.combine(date.today(), datetime.strptime(lunch, "%H:%M").time())
+        snack_dt  = datetime.combine(date.today(), datetime.strptime(snack, "%H:%M").time())
+        dinner_dt = datetime.combine(date.today(), datetime.strptime(dinner, "%H:%M").time())
+
+        # If block overlaps with lunch, move it after lunch
+        if current_time_dt < lunch_dt and (current_time_dt + timedelta(hours=adj_hrs)) > lunch_dt:
+            current_time_dt = lunch_dt + timedelta(minutes=45) # 45 min break
+        
+        # If block overlaps with snack, move it
+        if current_time_dt < snack_dt and (current_time_dt + timedelta(hours=adj_hrs)) > snack_dt:
+            current_time_dt = snack_dt + timedelta(minutes=20) # 20 min break
+
+        # If block overlaps with dinner, move it
+        if current_time_dt < dinner_dt and (current_time_dt + timedelta(hours=adj_hrs)) > dinner_dt:
+            current_time_dt = dinner_dt + timedelta(minutes=45) # 45 min break
+
+        start_time_str = current_time_dt.strftime("%I:%M %p")
 
         if paper == 2:
             sec_pool = [t for t in topics_p2 if t['section'] == section] or topics_p2
@@ -102,7 +139,6 @@ async def generate_daily_plan(user_id: int) -> list[dict]:
         else:
             topic = None
 
-        # For conceptual learners, add "Theory first" hint
         method_hint = ""
         if topic and error_type == "conceptual":
             method_hint = " [Theory→MCQ]"
@@ -110,10 +146,10 @@ async def generate_daily_plan(user_id: int) -> list[dict]:
             method_hint = " [MCQ→Review]"
 
         block = {
-            "label":             block_def['label'] + method_hint,
+            "label":             f"{start_time_str}: {block_def['label']}{method_hint}",
             "section":           section,
             "paper":             paper,
-            "hours":             adjusted_hours,
+            "hours":             adj_hrs,
             "emoji":             block_def['emoji'],
             "topic_id":          topic['topic_id']         if topic else None,
             "topic_name":        topic['name']              if topic else "–",
@@ -123,7 +159,34 @@ async def generate_daily_plan(user_id: int) -> list[dict]:
             "dyn_priority":      topic.get('_dyn_priority', 0) if topic else 0,
         }
         blocks.append(block)
+        current_time_dt += timedelta(hours=adj_hrs)
 
+    await save_daily_plan(user_id, blocks)
+    return blocks
+
+
+async def _generate_rest_day_plan(user_id: int) -> list[dict]:
+    """Light plan for the fortnightly rest day."""
+    blocks = [
+        {
+            "label": "10:00 AM: Relax & Recharge 🧘",
+            "section": "Review",
+            "paper": 0,
+            "hours": 0.5,
+            "emoji": "☀️",
+            "status": "pending",
+            "topic_name": "No heavy study today. Chill out!"
+        },
+        {
+            "label": "06:00 PM: Weekly Light Review",
+            "section": "Review",
+            "paper": 0,
+            "hours": 1.0,
+            "emoji": "📝",
+            "status": "pending",
+            "topic_name": "Just flip through your notes."
+        }
+    ]
     await save_daily_plan(user_id, blocks)
     return blocks
 
