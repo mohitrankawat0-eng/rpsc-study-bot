@@ -68,6 +68,10 @@ logging.basicConfig(
 )
 log = logging.getLogger("rpsc_bot")
 
+if not BOT_TOKEN:
+    log.critical("Stopping: No BOT_TOKEN found. Check your environment variables.")
+    sys.exit(1)
+
 bot = Bot(token=BOT_TOKEN)
 dp  = Dispatcher(storage=MemoryStorage())
 

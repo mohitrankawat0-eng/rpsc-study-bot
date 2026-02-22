@@ -9,8 +9,20 @@ load_dotenv()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # ── Bot Credentials ──────────────────────────────────────────────────────────
-BOT_TOKEN: str = os.getenv("BOT_TOKEN", "")
+raw_token = os.getenv("BOT_TOKEN", "").strip()
+# Remove accidental quotes if the user pasted them into Railway
+if (raw_token.startswith('"') and raw_token.endswith('"')) or \
+   (raw_token.startswith("'") and raw_token.endswith("'")):
+    raw_token = raw_token[1:-1].strip()
+
+BOT_TOKEN: str = raw_token
 ADMIN_CHAT_ID: int = int(os.getenv("ADMIN_CHAT_ID", "0"))
+
+if not BOT_TOKEN:
+    print("\n❌ FATAL ERROR: BOT_TOKEN is missing or empty!")
+    print("Please add 'BOT_TOKEN' to your Railway Environment Variables.\n")
+elif ":" not in BOT_TOKEN:
+    print(f"\n❌ FATAL ERROR: BOT_TOKEN '{BOT_TOKEN[:5]}...' looks invalid (missing ':')!")
 
 # ── Database (Mapped to Railway Volume) ─────────────────────────────────────
 # We use /app/data for the Volume to keep the DB safe
