@@ -182,7 +182,8 @@ async def _admin_daily_report(bot: Bot) -> None:
             f"🏆 *Top Performers (Most Hours)*"
         ]
         for i, u in enumerate(data['top'], 1):
-            lines.append(f"  {i}. {u['first_name']}: *{u['total_h']}h* ({int(u['acc'])}% acc)")
+            acc = int(u.get('acc', 0) or 0)
+            lines.append(f"  {i}. {u['first_name']}: *{u['total_h']}h* ({acc}% acc)")
         
         lines.append(f"\n✅ *On Track (High Adherence)*")
         for i, u in enumerate(data['on_track'], 1):

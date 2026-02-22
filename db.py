@@ -732,8 +732,8 @@ async def get_admin_leaderboard() -> dict:
         # 1. Top Performers (by hours + accuracy today)
         cur = await db.execute(
             """SELECT u.first_name, 
-                      SUM(s.hours_studied) as total_h,
-                      AVG(CAST(s.correct_answers AS FLOAT)/NULLIF(s.total_questions,0))*100 as acc
+                      COALESCE(SUM(s.hours_studied),0) as total_h,
+                      COALESCE(AVG(CAST(s.correct_answers AS FLOAT)/NULLIF(s.total_questions,0))*100, 0) as acc
                FROM users u
                JOIN sessions s ON u.user_id = s.user_id
                WHERE s.session_date = ?
