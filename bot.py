@@ -61,6 +61,7 @@ from scheduler import setup_scheduler, register_user_for_notifications
 
 # ── Logging ───────────────────────────────────────────────────────────────────
 logging.basicConfig(
+    stream=sys.stdout,
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     datefmt="%H:%M:%S",
@@ -896,35 +897,41 @@ def run_health_check_server():
 
 
 async def on_startup() -> None:
-    log.info("RPSC Study Bot starting...")
+    log.info("RPSC Study Bot setting up...")
     os.makedirs("data",    exist_ok=True)
     os.makedirs("reports", exist_ok=True)
     await init_db()
 
-    # Start Health Check Server in a thread
-    import threading
-    threading.Thread(target=run_health_check_server, daemon=True).start()
-
-    # Only 5 commands shown in the Telegram menu — keeps it clean
+    # Only 5 commands shown in the Telegram menu
     await bot.set_my_commands([
         BotCommand(command="start", description="Home menu / restart"),
         BotCommand(command="today", description="See today's study plan"),
-        BotCommand(command="done",  description="Log done: /done 90 8/10"),
+        BotCommand(command="done",  description="Log done tracker"),
         BotCommand(command="mock",  description="Start a mock test"),
         BotCommand(command="help",  description="User manual & guide"),
     ])
     setup_scheduler(bot)
-    log.info("Bot ready! Polling started.")
+    log.info("✅ Setup complete. Bot ready!")
 
 
 async def main() -> None:
     if not BOT_TOKEN:
-        print("ERROR: BOT_TOKEN not set in .env file!")
+        log.error("BOT_TOKEN not set! Bot cannot start.")
         return
+
+    # 1. Start Health Check Server IMMEDIATELY for Railway/Hosting
+    import threading
+    threading.Thread(target=run_health_check_server, daemon=True).start()
+
+    # 2. Register DB and Tasks
     dp.startup.register(on_startup)
-    log.info("Bot polling started. Press Ctrl+C to stop.")
+    
+    log.info("🚀 Starting Bot Polling...")
     await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except (KeyboardInterrupt, SystemExit):
+        log.info("Bot stopped.")

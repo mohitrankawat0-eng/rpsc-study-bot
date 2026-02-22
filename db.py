@@ -719,6 +719,14 @@ async def update_streak(user_id: int, hours_done: float) -> int:
         return (await cur.fetchone())[0]
 
 
+async def get_streak(user_id: int) -> int:
+    async with aiosqlite.connect(DB_PATH) as db:
+        cur = await db.execute(
+            """SELECT COUNT(*) FROM streaks
+               WHERE user_id=? AND is_complete=1
+               AND streak_date >= date('now','-30 days')""",
+            (user_id,)
+        )
         return (await cur.fetchone())[0] or 0
 
 
